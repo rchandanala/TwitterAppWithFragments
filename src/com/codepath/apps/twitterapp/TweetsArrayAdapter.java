@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +35,13 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 		ImageView ivProfile = (ImageView) view.findViewById(R.id.ivProfile);
 		ImageLoader.getInstance().displayImage(t.getUser().getProfilePic(), ivProfile);
 		TextView tvText = (TextView) view.findViewById(R.id.tvText);
-		tvText.setText(t.getText());
+		String tweetDetails =  t.getText()  + "<small><font color='#777777'>   " + t.getTimestamp() +
+				 "</font></small>";
+ 		tvText.setText(Html.fromHtml(tweetDetails));
 		TextView tvName = (TextView) view.findViewById(R.id.tvName);
-		tvName.setText(t.getUser().getScreenName());
+		String userDetials = "<b>" + t.getUser().getName() + "</b>" + " <small><font color='#777777'>@" + t.getUser().getScreenName() +
+				 "</font></small>";
+		tvName.setText(Html.fromHtml(userDetials));
 		return view;
 	}
 

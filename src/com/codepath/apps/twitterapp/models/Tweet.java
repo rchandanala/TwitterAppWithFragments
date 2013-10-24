@@ -12,6 +12,7 @@ public class Tweet {
 	private User user;
 	private String text;
 	private Long id;
+	private String timestamp;
 		
 	public Long getId() {
 		return id;
@@ -25,6 +26,9 @@ public class Tweet {
 		return user;
 	}
 	
+	public String getTimestamp() {
+		return timestamp;
+	}
 	public static Tweet fromJSON(JSONObject jsonTweet) {
 		Tweet t = new Tweet();
 		
@@ -32,6 +36,7 @@ public class Tweet {
 			t.id = jsonTweet.getLong("id");
 			t.text = jsonTweet.getString("text");
 			t.user = User.fromJSON(jsonTweet.getJSONObject("user"));
+			t.timestamp = jsonTweet.getString("created_at");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

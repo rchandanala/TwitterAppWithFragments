@@ -11,5 +11,6 @@
     <string name="title_activity_compose">ComposeActivity</string>
     <string name="cancel_label">Cancel</string>
     <string name="tweet_label">Tweet</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

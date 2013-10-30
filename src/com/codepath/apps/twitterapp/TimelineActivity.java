@@ -1,103 +1,104 @@
 package com.codepath.apps.twitterapp;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ListView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
-import com.codepath.apps.twitterapp.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.codepath.apps.twitterapp.fragments.HomeTimelineFragment;
+import com.codepath.apps.twitterapp.fragments.MentionsTimelineFragment;
+import com.codepath.apps.twitterapp.fragments.TweetsFragment;
+import com.codepath.apps.twitterapp.models.User;
 
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class TimelineActivity extends Activity {
-	ListView lvTweets;
-    TweetsArrayAdapter tweetAdapter;
-    ArrayList<Tweet> tweetArray = new ArrayList<Tweet>();
+public class TimelineActivity extends SherlockFragmentActivity  {
+	
+	SherlockTabListener<HomeTimelineFragment> homeTabListener;
+	SherlockTabListener<MentionsTimelineFragment> mentionsTabListener;
+	
+	 @Override
+	    public boolean onCreateOptionsMenu(Menu menu) {
+			// Inflate the menu; this adds items to the action bar if it is present.
+			getSupportMenuInflater().inflate(R.menu.timeline, menu);
+			return true;
+	 }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		_configureViews();
+		/*FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.replace(R.id.frame_container, new HomeTimelineFragment());
+		// or ft.add(R.id.your_placeholder, new FooFragment());
+		ft.commit(); */
+		setupTabs();
 
 	}
 	
-	private void _configureViews() {
+	
+	private void setupTabs() {
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowHomeEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(true);
+		homeTabListener = new SherlockTabListener<HomeTimelineFragment>(R.id.frame_container, this, "HomeTimelineFragment",
+				HomeTimelineFragment.class);
+		mentionsTabListener = new SherlockTabListener<MentionsTimelineFragment>(R.id.frame_container, this, "MentionsFragment",
+				MentionsTimelineFragment.class);
 		
-		lvTweets = (ListView) findViewById(R.id.lvTweets);
-		tweetAdapter = new TweetsArrayAdapter(this, tweetArray);
-		lvTweets.setAdapter(tweetAdapter);
-		loadMoreTweets(null);
-		/*lvTweets.setOnRefreshListener(new OnRefreshListener() {
+		Tab tabFirst = actionBar
+			.newTab()
+			.setText("HOME")
+			.setIcon(R.drawable.ic_home)
+			.setTabListener(homeTabListener);
 
-			@Override
-			public void onRefresh() {
-				// TODO Auto-generated method stub
-				tweetArray.clear();
-				loadMoreTweets(null);
-			}
+		actionBar.addTab(tabFirst);
+		actionBar.selectTab(tabFirst);
+		
+		Tab tabSecond = actionBar
+			.newTab()
+			.setText("MENTIONS")
+			.setIcon(R.drawable.ic_mentions)
+			.setTabListener(mentionsTabListener);
 			
-		}); */
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
 
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				// TODO Auto-generated method stub
-				//if (tweetArray.isEmpty()) { 
-					//loadMoreTweets(null);
-				//} else {
-				Tweet lastTweet = tweetArray.get(tweetArray.size()-1);
-				loadMoreTweets(lastTweet.getId()-1);
-				//}
-			}
-			
-		});
+		actionBar.addTab(tabSecond);
 	}
 	
+
 	public void onCompose(MenuItem m) {
 		Intent I = new Intent(this, ComposeActivity.class);
 		startActivityForResult(I, 1);
+	}
+	
+	public void onProfile(MenuItem m) {
+		Intent I = new Intent(this, ProfileActivity.class);
+		startActivity(I);
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		if ( requestCode == 1) {
-			tweetArray.clear();
-			loadMoreTweets(null);
+			 FragmentManager fragmentManager = getSupportFragmentManager();
+			 TweetsFragment currFragment = (TweetsFragment) fragmentManager.findFragmentById(R.id.frame_container);
+			 currFragment.loadNewTweets();
 		}
 	}
 	
-	public void loadMoreTweets(Long maxId) {
-		Log.d("LOADING", "in Load More");
-		TwitterClientApp.getRestClient().getTweets(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray jsonTweets) {
-				// TODO Auto-generated method stub
-				Log.d("DEBUG", jsonTweets.toString());
-				ArrayList<Tweet> tweets = Tweet.fromJSONArray(jsonTweets);
-				tweetArray.addAll(tweets);
-				tweetAdapter.notifyDataSetChanged();
-				Log.d("DEBUG", tweets.toString());
-			}
-		}, maxId); 
+	public void onProfileShow(View v) {
+		Intent I = new Intent(this, ProfileActivity.class);
+	    I.putExtra("user", (User)v.getTag());
+		startActivity(I);
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.timeline, menu);
-		return true;
-	}
+	
 
 }

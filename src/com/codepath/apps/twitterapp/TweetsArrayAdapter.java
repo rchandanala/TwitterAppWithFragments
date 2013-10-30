@@ -34,6 +34,7 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 		}
 		ImageView ivProfile = (ImageView) view.findViewById(R.id.ivProfile);
 		ImageLoader.getInstance().displayImage(t.getUser().getProfilePic(), ivProfile);
+		ivProfile.setTag(t.getUser());
 		TextView tvText = (TextView) view.findViewById(R.id.tvText);
 		String tweetDetails =  t.getText()  + "<small><font color='#777777'>   " + t.getTimestamp() +
 				 "</font></small>";

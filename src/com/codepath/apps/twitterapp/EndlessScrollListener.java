@@ -1,13 +1,13 @@
 package com.codepath.apps.twitterapp;
 
+import android.util.Log;
 import android.widget.AbsListView;
-import android.widget.Toast;
 import android.widget.AbsListView.OnScrollListener;
 
 public abstract class EndlessScrollListener implements OnScrollListener {
 	// The minimum amount of items to have below your current scroll position
 	// before loading more.
-	private int visibleThreshold = 1;
+	private int visibleThreshold = 5;
 	// The current offset index of data you have loaded
 	public int currentPage = 0;
 	// The total number of items in the dataset after the last load
@@ -43,6 +43,7 @@ public abstract class EndlessScrollListener implements OnScrollListener {
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 		
+		Log.d("Scroll", "Called with " + totalItemCount + " visi "+ visibleItemCount + " first " + firstVisibleItem);
 		// If the total item count is zero and the previous isn't, assume the
 		// list is invalidated and should be reset back to initial state
 		// If there are no items in the list, assume that initial items are loading

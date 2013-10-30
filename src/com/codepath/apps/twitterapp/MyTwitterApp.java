@@ -43,14 +43,25 @@ public class MyTwitterApp extends OAuthBaseClient {
         client.get(apiUrl, params, handler);
     }
     
-    public void getTweets(AsyncHttpResponseHandler handler, Long maxId) {
+    public void getTweets(AsyncHttpResponseHandler handler, RequestParams params) {
     	String apiUrl = getApiUrl("statuses/home_timeline.json");
-    	RequestParams params = new RequestParams();
+    	//RequestParams params = new RequestParams();
     	params.put("count", "25");
-    	if (maxId != null) {
-    		params.put("max_id",maxId.toString());
-    	}
     	client.get(apiUrl, params, handler);
+    }
+    
+    public void getMentionTweets(AsyncHttpResponseHandler handler, RequestParams params) {
+    	String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+    	//RequestParams params = new RequestParams();
+    	params.put("count", "25");
+    	client.get(apiUrl, params, handler);    	
+    }
+    
+    public void getProfileTimeline(AsyncHttpResponseHandler handler, RequestParams params) {
+    	String apiUrl = getApiUrl("statuses/user_timeline.json");
+    	//RequestParams params = new RequestParams();
+    	params.put("count", "25");
+    	client.get(apiUrl, params, handler);    	
     }
     
     public void postTweet(AsyncHttpResponseHandler handler, String status) {
@@ -59,6 +70,11 @@ public class MyTwitterApp extends OAuthBaseClient {
     	params.put("status", status);
     	
     	client.post(apiUrl, params, handler);
+    }
+    
+    public void getMyInfo(AsyncHttpResponseHandler handler) {
+    	String apiUrl = getApiUrl("account/verify_credentials.json");
+    	client.get(apiUrl, null, handler);
     }
     
     /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
